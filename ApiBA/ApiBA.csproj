@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+ <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.16" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.16" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+ <ItemGroup>
+   <None Remove="Models\" />
+   <None Remove="Data\" />
+   <None Remove="Services\" />
+   <None Remove="Repositories\" />
+   <None Remove="Options\" />
+   <None Remove="Contexts\" />
+   <None Remove="Models\Booking\" />
+   <None Remove="Authorize\" />
+ </ItemGroup>
+ <ItemGroup>
+   <Folder Include="Models\" />
+   <Folder Include="Data\" />
+   <Folder Include="Services\" />
+   <Folder Include="Repositories\" />
+   <Folder Include="Options\" />
+   <Folder Include="Contexts\" />
+   <Folder Include="Models\Booking\" />
+   <Folder Include="Authorize\" />
+ </ItemGroup>
+</Project>
