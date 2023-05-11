@@ -64,6 +64,12 @@ namespace ApiBA.Repositories
                 authenticationModel.Message = $"No Accounts Registered with {model.UserName}.";
                 return authenticationModel;
             }
+            var userClaims = (await _userManager.GetClaimsAsync(user)).Where(a => a.Type == "ipaddress");
+            if(userClaims == null || userClaims.Count() == 0 || !userClaims.Select(a => a.Value).Any(a => HttpContext.Connection.RemoteIpAddress.ToString() == a))
+            {
+                authenticationModel.Message = $"Your IP address is not allowed";
+                return authenticationModel;
+            }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 //authenticationModel.IsAuthenticated = true;

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "wlA7K1zcZRYYLHwznoTqOAUWiBfhP2tKYGkR8TlDBvsQNVUVsXAqx1qFKa652qWS5zSIcnaVCNCtlJ892pHGUQ==",
+  "dgSpecHash": "1is1Jv8TzQOzsqd2kNTiyzjn3tfw93XzrY5je8PtWdFGqSROBgX4tBFbVppMVhLslnQCEAAerU5+AukA2eNkag==",
   "success": true,
-  "projectFilePath": "/Users/quoctrong/Desktop/API/ApiBA/ApiBA/ApiBA.csproj",
+  "projectFilePath": "/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/ApiBA.csproj",
   "expectedPackageFiles": [
     "/Users/quoctrong/.nuget/packages/azure.core/1.24.0/azure.core.1.24.0.nupkg.sha512",
     "/Users/quoctrong/.nuget/packages/azure.identity/1.6.0/azure.identity.1.6.0.nupkg.sha512",

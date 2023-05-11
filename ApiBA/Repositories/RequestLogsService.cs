@@ -38,6 +38,13 @@ namespace ApiBA.Repositories
 			return check;
 		}
 
+        public async Task<bool> HasPnrNumberAsync(string pnrNumber)
+        {
+            var url = _apiUrlOption.CreateBooking;
+            var check = await _dBContext.RequestLogs.AnyAsync(a => a.PnrNumber == pnrNumber && a.ApiUrl == url);
+            return check;
+        }
+
         public async Task<int> GetTotalRequestTodayAsync(string userName)
         {
 			var today = DateTimeOffset.Now;

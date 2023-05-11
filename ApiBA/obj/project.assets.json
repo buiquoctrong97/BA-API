@@ -4231,11 +4231,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/quoctrong/Desktop/API/ApiBA/ApiBA/ApiBA.csproj",
+      "projectUniqueName": "/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/ApiBA.csproj",
       "projectName": "ApiBA",
-      "projectPath": "/Users/quoctrong/Desktop/API/ApiBA/ApiBA/ApiBA.csproj",
+      "projectPath": "/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/ApiBA.csproj",
       "packagesPath": "/Users/quoctrong/.nuget/packages/",
-      "outputPath": "/Users/quoctrong/Desktop/API/ApiBA/ApiBA/obj/",
+      "outputPath": "/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/quoctrong/.nuget/NuGet/NuGet.Config"

@@ -9,6 +9,7 @@ namespace ApiBA.Services
         Task<(OperationResult state, RequestLogs value)> CreateAsync(RequestLogs requestLogs);
         Task<bool> CheckPnrNumberAsync(string userName, string pnrNumber);
         Task<int> GetTotalRequestTodayAsync(string userName);
+        Task<bool> HasPnrNumberAsync(string pnrNumber);
     }
 }
 

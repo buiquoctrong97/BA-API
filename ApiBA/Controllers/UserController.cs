@@ -17,6 +17,7 @@ namespace ApiBA.Controllers
         }
 
         [HttpPost("register")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> RegisterAsync(RegisterModel model)
         {
             var result = await _userService.RegisterAsync(model);
@@ -92,8 +93,6 @@ namespace ApiBA.Controllers
             var result = await _userService.RemoveClaimsAsync(claimModel);
             return Ok(result);
         }
-
-
 
     }
 }

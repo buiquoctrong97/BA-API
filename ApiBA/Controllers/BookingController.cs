@@ -437,7 +437,13 @@ namespace ApiBA.Controllers
         {
             var userName = _httpContextAccessor.HttpContext?.User.Claims
                 .FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
-
+            var hasPnr = await _requestLogsService.HasPnrNumberAsync(model.pnr_number);
+            if (!hasPnr)
+            {
+                return Ok(JsonConvert.SerializeObject(new {
+                    Message = "Reservation code is not in the system"
+                }));
+            }
             var checkAuthor = await _requestLogsService.CheckPnrNumberAsync(userName, model.pnr_number);
             if (checkAuthor)
             {
@@ -486,7 +492,10 @@ namespace ApiBA.Controllers
             }
             else
             {
-                return Unauthorized();
+                return Ok(JsonConvert.SerializeObject(new
+                {
+                    Message = "You do not have permission to view this pnr_number"
+                }));
             }
 
         }
