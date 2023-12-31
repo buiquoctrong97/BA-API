@@ -5,6 +5,9 @@ namespace ApiBA.Models.Booking
     {
         public AvailabilitySearches[] availability_searches { get; set; }
         public PaxTypesAALT[] pax_types {get;set;}
+        public string trip_type { get; set; } //Loại chặng bay (OW: 1 chiều; RT: Khứ hồi; MC: Nhiều chặng)
+        public string? point_of_purchase { get; set; } = "VND"; //Loại đồng tiền mua - mặc định VND
+
     }
 
     public class AvailabilitySearches

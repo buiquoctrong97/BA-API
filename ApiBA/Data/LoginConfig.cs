@@ -10,7 +10,9 @@ namespace ApiBA.Data
 		public string ClientId { get; set; }
 		public string ClientSecret { get; set; }
 		public string? Token { get; set; }
-		public DateTimeOffset? ModifiedDate { get; set; }
+		public string IataCode { get; set; }
+
+        public DateTimeOffset? ModifiedDate { get; set; }
 		public LoginConfig()
 		{
 		}

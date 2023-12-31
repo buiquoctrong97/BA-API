@@ -10,6 +10,8 @@ namespace ApiBA.Data
 		public string? Parameters { get; set; }
 		public string? ResponseResult { get; set; }
 		public string? PnrNumber { get; set; }
+		public string? AirBookingId { get; set; }
+		public int? StatusCode { get; set; }
         public RequestLogs()
 		{
 			

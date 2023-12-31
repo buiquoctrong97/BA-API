@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using ApiBA.Models.Booking;
 using Newtonsoft.Json;
 using ApiBA.Models;
+using Newtonsoft.Json.Linq;
 
 namespace ApiBA.Repositories
 {
@@ -35,9 +36,10 @@ namespace ApiBA.Repositories
                     Email = _apiLoginOption.Email,
                     ClientId = _apiLoginOption.ClientSecret,
                     ClientSecret = _apiLoginOption.ClientSecret,
-                    Password = _apiLoginOption.Password
+                    Password = _apiLoginOption.Password,
+                    IataCode = _apiLoginOption.IataCode
                 };
-                var token = await LoginApiAsync(_apiLoginOption.Email, _apiLoginOption.Password, _apiLoginOption.ClientId, _apiLoginOption.ClientSecret, _apiLoginOption.ApiUrl);
+                var token = await LoginApiAsync(_apiLoginOption.Email, _apiLoginOption.Password,_apiLoginOption.IataCode, _apiLoginOption.ClientId, _apiLoginOption.ClientSecret, _apiLoginOption.ApiUrl);
                 loginNew.Token = token;
                 //get token api
 
@@ -50,7 +52,7 @@ namespace ApiBA.Repositories
             {
                 if (string.IsNullOrEmpty(login.Token))
                 {
-                    var token = await LoginApiAsync(login.UserName, login.Password, login.ClientId, login.ClientSecret, _apiLoginOption.ApiUrl);
+                    var token = await LoginApiAsync(login.UserName, login.Password,login.IataCode, login.ClientId, login.ClientSecret, _apiLoginOption.ApiUrl);
                     login.Token = token;
                     _dbContext.LoginConfig.Update(login);
                     await _dbContext.SaveChangesAsync();
@@ -63,10 +65,10 @@ namespace ApiBA.Repositories
             }
         }
 
-        private async Task<string> LoginApiAsync(string userName, string password, string clientId, string clientSecret, string url)
+        private async Task<string> LoginApiAsync(string userName, string password, string iata_code, string clientId, string clientSecret, string url)
         {
             HttpClient client = new HttpClient();
-            var login = new Login(userName, password, clientId, clientSecret);
+            var login = new Login(userName, password, iata_code);
             //var test = new LoginModel
             //{
             //    UserName = userName,
@@ -75,14 +77,25 @@ namespace ApiBA.Repositories
             string json = JsonConvert.SerializeObject(login);
 
             StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
+            
+            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
             var response = await client.PostAsync(url, httpContent);
 
             var result = await response.Content.ReadAsStringAsync();
             try
             {
-                var value = JsonConvert.DeserializeObject<ResultLogin>(result);
-                return value.token;
+                var data = JsonConvert.DeserializeObject<APIResponse>(result);
+                var val = JsonConvert.SerializeObject(data.data);
+                var value = JsonConvert.DeserializeObject<ResultLogin>(val);
+                if (value != null)
+                {
+                    return value.access_token;
+                }
+                else
+                {
+                    return "";
+                }
             }
             catch
             {
@@ -104,7 +117,7 @@ namespace ApiBA.Repositories
                     ClientSecret = _apiLoginOption.ClientSecret,
                     Password = _apiLoginOption.Password
                 };
-                var token = await LoginApiAsync(_apiLoginOption.Email, _apiLoginOption.Password, _apiLoginOption.ClientId, _apiLoginOption.ClientSecret, _apiLoginOption.ApiUrl);
+                var token = await LoginApiAsync(_apiLoginOption.Email, _apiLoginOption.Password,_apiLoginOption.IataCode, _apiLoginOption.ClientId, _apiLoginOption.ClientSecret, _apiLoginOption.ApiUrl);
                 loginNew.Token = token;
                 //get token api
 
@@ -116,7 +129,7 @@ namespace ApiBA.Repositories
             else
             {
 
-                var token = await LoginApiAsync(login.Email, login.Password, login.ClientId, login.ClientSecret, _apiLoginOption.ApiUrl);
+                var token = await LoginApiAsync(login.Email, login.Password,login.IataCode, login.ClientId, login.ClientSecret, _apiLoginOption.ApiUrl);
                 login.Token = token;
                 _dbContext.LoginConfig.Update(login);
                 await _dbContext.SaveChangesAsync();

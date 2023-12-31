@@ -56,6 +56,8 @@ namespace ApiBA.Repositories
                  .CountAsync();
 			return count;
         }
+
+        public IQueryable<RequestLogs> Query() => _dBContext.RequestLogs.AsQueryable();
     }
 }
 
