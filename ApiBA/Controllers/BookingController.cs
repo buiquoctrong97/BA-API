@@ -64,41 +64,47 @@ namespace ApiBA.Controllers
 
 			
 			var token = await _loginConfigService.GetTokenAsync();
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Headers.Add("x-api-key", _apiLoginOption.ClientId);
-            request.Headers.Add("x-api-secret", _apiLoginOption.ClientSecret);
-            request.Headers.Add("Authorization", "Bearer " + token);
-            var content = new StringContent(json, null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            
-			if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-			{
-                token = await _loginConfigService.RefreshTokenAsync();
-                var client1 = new HttpClient();
-                var request1 = new HttpRequestMessage(HttpMethod.Post, url);
-                request1.Headers.Add("x-api-key", _apiLoginOption.ClientId);
-                request1.Headers.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                request1.Headers.Add("Authorization", "Bearer " + token);
-                request1.Content = content;
-                var response1 = await client1.SendAsync(request);
 
-                var result1 = await response1.Content.ReadAsStringAsync();
-				log.ResponseResult = result1;
+            using (var client = new HttpClient())
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                request.Headers.Add("x-api-key", _apiLoginOption.ClientId);
+                request.Headers.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                request.Headers.Add("Authorization", "Bearer " + token);
+                var content = new StringContent(json, null, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
 
-				//create log
-				await _requestLogsService.CreateAsync(log);
-				
-				return Ok(result1);
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
+                    {
+                        
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, url);
+                    request1.Headers.Add("x-api-key", _apiLoginOption.ClientId);
+                    request1.Headers.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                    request1.Headers.Add("Authorization", "Bearer " + token);
+                    request1.Content = content;
+                    var response1 = await client1.SendAsync(request1);
+
+                    var result1 = await response1.Content.ReadAsStringAsync();
+                    log.ResponseResult = result1;
+
+                    //create log
+                    await _requestLogsService.CreateAsync(log);
+
+                    return Ok(result1);
+                        }
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                log.ResponseResult = result;
+
+                await _requestLogsService.CreateAsync(log);
+
+                return Ok(result);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            log.ResponseResult = result;
-
-            await _requestLogsService.CreateAsync(log);
-
-            return Ok(result);
 
         }
 
@@ -126,70 +132,74 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-            
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
-                log.StatusCode = ((int)response1.StatusCode);
-                try
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+                        log.StatusCode = ((int)response1.StatusCode);
+                        try
+                        {
+                            var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
+                            var data = objectResult.data;
+                            string pnrNubmer = null;
+                            if (data != null)
+                            {
+                                pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                            }
+                            log.PnrNumber = pnrNubmer;
+                        }
+                        catch
+                        {
+
+                        }
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return Ok(result1);
                     }
-                    log.PnrNumber = pnrNubmer;
                 }
-                catch
+                else
                 {
 
-                }
-                //create log
-                await _requestLogsService.CreateAsync(log);
-
-                return Ok(result1);
-            }
-            else
-            {
-
-                var result = await response.Content.ReadAsStringAsync();
-                log.ResponseResult = result;
-                log.StatusCode = ((int)response.StatusCode);
-                try
-                {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    var result = await response.Content.ReadAsStringAsync();
+                    log.ResponseResult = result;
+                    log.StatusCode = ((int)response.StatusCode);
+                    try
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
+                        var data = objectResult.data;
+                        string pnrNubmer = null;
+                        if (data != null)
+                        {
+                            pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        }
+                        log.PnrNumber = pnrNubmer;
                     }
-                    log.PnrNumber = pnrNubmer;
-                }
-                catch
-                {
+                    catch
+                    {
 
-                }
-                await _requestLogsService.CreateAsync(log);
+                    }
+                    await _requestLogsService.CreateAsync(log);
 
-                return Ok(result);
+                    return Ok(result);
+                }
             }
 
         }
@@ -227,70 +237,73 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
-                try
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+                        try
+                        {
+                            var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
+                            var data = objectResult.data;
+                            string pnrNubmer = null;
+                            if (data != null)
+                            {
+                                pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                            }
+                            log.PnrNumber = pnrNubmer;
+                        }
+                        catch
+                        {
+
+                        }
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return Ok(result1);
                     }
-                    log.PnrNumber = pnrNubmer;
                 }
-                catch
+                else
                 {
 
-                }
-                //create log
-                await _requestLogsService.CreateAsync(log);
-
-                return Ok(result1);
-            }
-            else
-            {
-
-                var result = await response.Content.ReadAsStringAsync();
-                log.ResponseResult = result;
-                try
-                {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    var result = await response.Content.ReadAsStringAsync();
+                    log.ResponseResult = result;
+                    try
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
+                        var data = objectResult.data;
+                        string pnrNubmer = null;
+                        if (data != null)
+                        {
+                            pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        }
+                        log.PnrNumber = pnrNubmer;
                     }
-                    log.PnrNumber = pnrNubmer;
-                }
-                catch
-                {
+                    catch
+                    {
 
-                }
-                await _requestLogsService.CreateAsync(log);
+                    }
+                    await _requestLogsService.CreateAsync(log);
 
-                return Ok(result);
+                    return Ok(result);
+                }
             }
-
         }
 
         private async Task<string> CreateBookingHoldOnAsync(CreateBooking model)
@@ -313,70 +326,74 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
-                log.StatusCode = ((int)response1.StatusCode);
-                try
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+                        log.StatusCode = ((int)response1.StatusCode);
+                        try
+                        {
+                            var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
+                            var data = objectResult.data;
+                            string pnrNubmer = null;
+                            if (data != null)
+                            {
+                                pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                            }
+                            log.PnrNumber = pnrNubmer;
+                        }
+                        catch
+                        {
+
+                        }
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return result1;
                     }
-                    log.PnrNumber = pnrNubmer;
                 }
-                catch
+                else
                 {
 
-                }
-                //create log
-                await _requestLogsService.CreateAsync(log);
-
-                return result1;
-            }
-            else
-            {
-
-                var result = await response.Content.ReadAsStringAsync();
-                log.ResponseResult = result;
-                log.StatusCode = ((int)response.StatusCode);
-                try
-                {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
-                    var data = objectResult.data;
-                    string pnrNubmer = null;
-                    if (data != null)
+                    var result = await response.Content.ReadAsStringAsync();
+                    log.ResponseResult = result;
+                    log.StatusCode = ((int)response.StatusCode);
+                    try
                     {
-                        pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
+                        var data = objectResult.data;
+                        string pnrNubmer = null;
+                        if (data != null)
+                        {
+                            pnrNubmer = data.ContainsKey("pnr_number") ? data["pnr_number"].ToString() : null;
+                        }
+                        log.PnrNumber = pnrNubmer;
                     }
-                    log.PnrNumber = pnrNubmer;
-                }
-                catch
-                {
+                    catch
+                    {
 
-                }
-                await _requestLogsService.CreateAsync(log);
+                    }
+                    await _requestLogsService.CreateAsync(log);
 
-                return result;
+                    return result;
+                }
             }
         }
 
@@ -402,32 +419,70 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.StatusCode = ((int)response1.StatusCode);
-                if(result1 != null)
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
+                    {
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.StatusCode = ((int)response1.StatusCode);
+                        if (result1 != null)
+                        {
+                            try
+                            {
+                                var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
+                                var data = objectResult.data;
+
+                                if (data != null)
+                                {
+                                    var id = data.ContainsKey("id") ? data["id"].ToString() : null;
+                                    log.AirBookingId = id;
+                                }
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        log.ResponseResult = result1;
+
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+                        var modelBooking1 = new CreateBooking
+                        {
+                            pnr_on_hold = true,
+                            air_booking_id = model.air_booking_id
+
+                        };
+                        responseCreate = await CreateBookingHoldOnAsync(modelBooking1);
+                        return Ok(responseCreate);
+                    }
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                log.ResponseResult = result;
+                log.StatusCode = ((int)response.StatusCode);
+                if (result != null)
                 {
                     try
                     {
-                        var objectResult = JsonConvert.DeserializeObject<ApiResult>(result1);
+                        var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
                         var data = objectResult.data;
-                        
+
                         if (data != null)
                         {
                             var id = data.ContainsKey("id") ? data["id"].ToString() : null;
@@ -439,51 +494,16 @@ namespace ApiBA.Controllers
 
                     }
                 }
-                log.ResponseResult = result1;
-
-                //create log
                 await _requestLogsService.CreateAsync(log);
-                var modelBooking1 = new CreateBooking
+                var modelBooking = new CreateBooking
                 {
                     pnr_on_hold = true,
                     air_booking_id = model.air_booking_id
 
                 };
-                responseCreate = await CreateBookingHoldOnAsync(modelBooking1);
+                responseCreate = await CreateBookingHoldOnAsync(modelBooking);
                 return Ok(responseCreate);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            log.ResponseResult = result;
-            log.StatusCode = ((int)response.StatusCode);
-            if (result != null)
-            {
-                try
-                {
-                    var objectResult = JsonConvert.DeserializeObject<ApiResult>(result);
-                    var data = objectResult.data;
-
-                    if (data != null)
-                    {
-                        var id = data.ContainsKey("id") ? data["id"].ToString() : null;
-                        log.AirBookingId = id;
-                    }
-                }
-                catch
-                {
-
-                }
-            }
-            await _requestLogsService.CreateAsync(log);
-            var modelBooking = new CreateBooking
-            {
-                pnr_on_hold = true,
-                air_booking_id = model.air_booking_id
-
-            };
-            responseCreate = await CreateBookingHoldOnAsync(modelBooking);
-            return Ok(responseCreate);
-
         }
         [HttpPost("pre_confirm_price")]
         [Authorize(Roles = "ConfirmPrice")]
@@ -506,39 +526,42 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
 
-                //create log
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
+                    {
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return Ok(result1);
+                    }
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                log.ResponseResult = result;
+
                 await _requestLogsService.CreateAsync(log);
 
-                return Ok(result1);
+                return Ok(result);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            log.ResponseResult = result;
-
-            await _requestLogsService.CreateAsync(log);
-
-            return Ok(result);
-
         }
 
         [HttpPost("booking_paynow")]
@@ -563,38 +586,42 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
 
-                //create log
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
+                    {
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return Ok(result1);
+                    }
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                log.ResponseResult = result;
+
                 await _requestLogsService.CreateAsync(log);
 
-                return Ok(result1);
+                return Ok(result);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            log.ResponseResult = result;
-
-            await _requestLogsService.CreateAsync(log);
-
-            return Ok(result);
 
         }
 
@@ -619,38 +646,43 @@ namespace ApiBA.Controllers
 
 
             var token = await _loginConfigService.GetTokenAsync();
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-            client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync(url, httpContent);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            using (var client = new HttpClient())
             {
-                token = await _loginConfigService.RefreshTokenAsync();
-                HttpClient client1 = new HttpClient();
-                client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientSecret);
-                var response1 = await client1.PostAsync(url, httpContent);
-                var result1 = await response1.Content.ReadAsStringAsync();
-                log.ResponseResult = result1;
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
 
-                //create log
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, httpContent);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    token = await _loginConfigService.RefreshTokenAsync();
+                    using (var client1 = new HttpClient())
+                    {
+                        client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                        client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientSecret);
+                        var response1 = await client1.PostAsync(url, httpContent);
+                        var result1 = await response1.Content.ReadAsStringAsync();
+                        log.ResponseResult = result1;
+
+                        //create log
+                        await _requestLogsService.CreateAsync(log);
+
+                        return Ok(result1);
+                    }
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                log.ResponseResult = result;
+
                 await _requestLogsService.CreateAsync(log);
 
-                return Ok(result1);
+                return Ok(result);
+
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            log.ResponseResult = result;
-
-            await _requestLogsService.CreateAsync(log);
-
-            return Ok(result);
 
         }
         [HttpPost("retrieve_booking")]
@@ -684,46 +716,51 @@ namespace ApiBA.Controllers
 
 
                 var token = await _loginConfigService.GetTokenAsync();
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-
-                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync(url, httpContent);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                using (var client = new HttpClient())
                 {
-                    token = await _loginConfigService.RefreshTokenAsync();
-                    HttpClient client1 = new HttpClient();
-                    client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                    client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
-                    client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
-                    var response1 = await client1.PostAsync(url, httpContent);
-                    var result1 = await response1.Content.ReadAsStringAsync();
-                    log.ResponseResult = result1;
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                    client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                    client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
 
-                    //create log
+                    StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(url, httpContent);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        token = await _loginConfigService.RefreshTokenAsync();
+                        using (var client1 = new HttpClient())
+                        {
+                            client1.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                            client1.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
+                            client1.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
+                            var response1 = await client1.PostAsync(url, httpContent);
+                            var result1 = await response1.Content.ReadAsStringAsync();
+                            log.ResponseResult = result1;
+
+                            //create log
+                            await _requestLogsService.CreateAsync(log);
+
+                            return Ok(result1);
+                        }
+                    }
+
+                    var result = await response.Content.ReadAsStringAsync();
+                    log.ResponseResult = result;
+
                     await _requestLogsService.CreateAsync(log);
 
-                    return Ok(result1);
+                    return Ok(result);
                 }
-
-                var result = await response.Content.ReadAsStringAsync();
-                log.ResponseResult = result;
-
-                await _requestLogsService.CreateAsync(log);
-
-                return Ok(result);
-            }
+                }
             else
-            {
-                return Ok(JsonConvert.SerializeObject(new
                 {
-                    Message = "You do not have permission to view this pnr_number"
-                }));
-            }
+                    return Ok(JsonConvert.SerializeObject(new
+                    {
+                        Message = "You do not have permission to view this pnr_number"
+                    }));
+                }
+            
 
         }
 

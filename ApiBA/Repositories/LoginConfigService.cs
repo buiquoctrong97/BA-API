@@ -67,7 +67,7 @@ namespace ApiBA.Repositories
 
         private async Task<string> LoginApiAsync(string userName, string password, string iata_code, string clientId, string clientSecret, string url)
         {
-            HttpClient client = new HttpClient();
+            
             var login = new Login(userName, password, iata_code);
             //var test = new LoginModel
             //{
@@ -75,8 +75,8 @@ namespace ApiBA.Repositories
             //    Password = password
             //};
             string json = JsonConvert.SerializeObject(login);
-
-            StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            using (var client = new HttpClient()) { 
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
             client.DefaultRequestHeaders.Add("x-api-key", _apiLoginOption.ClientId);
             client.DefaultRequestHeaders.Add("x-api-secret", _apiLoginOption.ClientSecret);
@@ -101,6 +101,7 @@ namespace ApiBA.Repositories
             {
                 return "";
             }
+                }
         }
 
         public async Task<string> RefreshTokenAsync()
