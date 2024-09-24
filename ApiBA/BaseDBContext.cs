@@ -11,6 +11,7 @@ namespace ApiBA
     {
         public DbSet<RequestLogs> RequestLogs { get; set; }
         public DbSet<LoginConfig> LoginConfig { get; set; }
+        public DbSet<TokenWeb> TokenWeb { get; set; }
         public BaseDBContext(DbContextOptions<BaseDBContext> options) : base(options)
         {
 

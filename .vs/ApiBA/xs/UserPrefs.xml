@@ -1,0 +1,77 @@
+﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{5533E87D-1AF5-4687-8E8F-8752F74B9F16}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Controllers/UserController.cs" relfile="ApiBA/Controllers/UserController.cs" line="31" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Controllers/UserController.cs" relfile="ApiBA/Controllers/UserController.cs" line="30" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="88" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="87" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="84" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="73" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="69" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="68" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="58" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="60" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="61" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Repositories/UserService.cs" relfile="ApiBA/Repositories/UserService.cs" line="67" column="1" />
+      <Breakpoint file="/Users/quoctrong/Documents/GitHub/BA-API/ApiBA/Controllers/BookingController.cs" relfile="ApiBA/Controllers/BookingController.cs" line="799" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="ApiBA/Controllers/APIController.cs">
+    <Files>
+      <File FileName="ApiBA/Repositories/LoginConfigService.cs" />
+      <File FileName="ApiBA/Repositories/UserService.cs" />
+      <File FileName="ApiBA/Program.cs" />
+      <File FileName="ApiBA/Authorize/IpCheckRequirement.cs" />
+      <File FileName="ApiBA/Repositories/RequestLogsService.cs" Line="1" Column="1" />
+      <File FileName="ApiBA/Controllers/BookingController.cs" Line="19" Column="32" />
+      <File FileName="ApiBA/Controllers/UserController.cs" Line="10" Column="20" />
+      <File FileName="ApiBA/Models/RegisterModel.cs" />
+      <File FileName="ApiBA/Authorize/MaxRequestRequirement.cs" />
+      <File FileName="ApiBA/appsettings.json" />
+      <File FileName="ApiBA/Models/Booking/ConfirmPrice.cs" />
+      <File FileName="ApiBA/Models/Booking/AirAvailabilityTransit.cs" />
+      <File FileName="ApiBA/Models/OperationResult.cs" />
+      <File FileName="ApiBA/Models/Booking/CreateBooking.cs" />
+      <File FileName="ApiBA/Models/Booking/RetrieveBooking.cs" />
+      <File FileName="ApiBA/Models/Booking/ListBaggage.cs" />
+      <File FileName="ApiBA/Models/Booking/Login.cs" />
+      <File FileName="ApiBA/Models/AddRoleModel.cs" />
+      <File FileName="ApiBA/Contexts/ApplicationDbContextSeed.cs" />
+      <File FileName="ApiBA/Services/IUserService.cs" Line="1" Column="1" />
+      <File FileName="ApiBA/Options/Authorization.cs" />
+      <File FileName="ApiBA/Options/ApiUrlOption.cs" />
+      <File FileName="ApiBA/Data/LoginConfig.cs" Line="4" Column="15" />
+      <File FileName="ApiBA/Options/JWT.cs" />
+      <File FileName="ApiBA/Data/User.cs" Line="1" Column="1" />
+      <File FileName="ApiBA/Data/API.cs" />
+      <File FileName="ApiBA/Models/Booking/BookingPaynow.cs" />
+      <File FileName="ApiBA/Options/ApiLoginOption.cs" />
+      <File FileName="ApiBA/Data/RequestLogs.cs" Line="2" Column="21" />
+      <File FileName="ApiBA/Models/LoginModel.cs" />
+      <File FileName="ApiBA/Services/IRequestLogsService.cs" Line="1" Column="1" />
+      <File FileName="ApiBA/Models/ResponseFilter.cs" />
+      <File FileName="ApiBA/Services/ILoginConfigService.cs" Line="9" Column="2" />
+      <File FileName="ApiBA/BaseDBContext.cs" Line="17" Column="1" />
+      <File FileName="ApiBA/Data/TokenWeb.cs" Line="9" Column="20" />
+      <File FileName="ApiBA/Controllers/APIController.cs" Line="17" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="ApiBA" selected="True">
+            <Node name="ApiBA">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Data" expanded="True" />
+              <Node name="Repositories" expanded="True" />
+              <Node name="Services" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.ApiBA PreferredExecutionTarget="/Applications/Google Chrome.app" />
+</Properties>

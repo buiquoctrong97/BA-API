@@ -4250,8 +4250,13 @@
         "net6.0"
       ],
       "sources": {
+<<<<<<< HEAD
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\DevExpress 22.2\\Components\\System\\Components\\Packages": {},
+=======
+        "/usr/local/share/dotnet/library-packs": {},
+        "/usr/local/share/dotnet/sdk/7.0.313/Sdks/Microsoft.NET.Sdk.Web/library-packs": {},
+>>>>>>> a51372dac70a82250bf0e2a2fddba51849715b7c
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4351,7 +4356,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100-preview.7.24407.12\\RuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.313/RuntimeIdentifierGraph.json"
+>>>>>>> a51372dac70a82250bf0e2a2fddba51849715b7c
       }
     }
   }

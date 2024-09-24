@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "82BKiSKJJBTCyDmYRxBjtDBjyj+O2A3AHS+5xK6iHRe19LRbtmEBhFdhM5HE9Xvj8NeGRDJu0ZC2XrdMO9hhvw==",
+=======
+  "dgSpecHash": "8kTyhvryzYyozmEyKuO6KbUvkBDk1PWrj+Kp4fa+Ub6R8MJWUpJbNmq8A8gNTmm0ZccYvnoHk/r8FmaekjK5Zg==",
+>>>>>>> a51372dac70a82250bf0e2a2fddba51849715b7c
   "success": true,
   "projectFilePath": "D:\\DEV\\MyProject\\BA-API\\ApiBA\\ApiBA.csproj",
   "expectedPackageFiles": [

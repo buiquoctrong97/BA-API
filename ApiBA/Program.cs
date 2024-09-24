@@ -36,6 +36,7 @@ builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<Base
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginConfigService, LoginConfigService>();
 builder.Services.AddScoped<IRequestLogsService, RequestLogsService>();
+builder.Services.AddScoped<ITokenWebService, TokenWebService>();
 
 builder.Services.AddScoped<IAuthorizationHandler, IpCheckHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, MaxRequestHandler>();

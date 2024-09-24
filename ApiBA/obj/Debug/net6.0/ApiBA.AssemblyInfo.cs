@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApiBA")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9051d8764556e22579594191459bd7b366dfc811")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30bb5eb3f7966fe8eeb55150eaf7c42637d095e6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApiBA")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApiBA")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
