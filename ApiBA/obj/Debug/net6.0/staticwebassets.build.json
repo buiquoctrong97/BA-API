@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "Dx/+ThBNsYPgnwmImOrvmqkArxycuWFZW9k8rNLBCGA=",
+  "Hash": "Evn8slT4+Ef3joYQ6CkktlAvBpQQRuEY9dz9aKAIWew=",
   "Source": "ApiBA",
   "BasePath": "_content/ApiBA",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

@@ -693,15 +693,22 @@ namespace ApiBA.Controllers
         {
             var userName = _httpContextAccessor.HttpContext?.User.Claims
                 .FirstOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
-            var hasPnr = await _requestLogsService.HasPnrNumberAsync(model.pnr_number);
-            if (!hasPnr)
+
+            var isAdministrator = _httpContextAccessor.HttpContext?.User.Claims
+                .Where(a => a.Type == ClaimTypes.Role).Any(a => a.Value == "Administrator") ?? false;
+            if (!isAdministrator)
             {
-                return Ok(JsonConvert.SerializeObject(new {
-                    Message = "Reservation code is not in the system"
-                }));
+                var hasPnr = await _requestLogsService.HasPnrNumberAsync(model.pnr_number);
+                if (!hasPnr)
+                {
+                    return Ok(JsonConvert.SerializeObject(new
+                    {
+                        Message = "Reservation code is not in the system"
+                    }));
+                }
             }
             var checkAuthor = await _requestLogsService.CheckPnrNumberAsync(userName, model.pnr_number);
-            if (checkAuthor)
+            if (checkAuthor || isAdministrator)
             {
                 var url = _apiUrlOption.RetrieveBooking;
                 string json = JsonConvert.SerializeObject(model);
